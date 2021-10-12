@@ -51,7 +51,7 @@ def package_examples():
     data = np.concatenate(data, axis=0)
     to_h5(data, "timeseries_with_channels.h5")
     # original voxel size is 0.25 x 0.1625 x 0.1625 micrometer and we use cale 2 (downsampled by 2^2=4)
-    metadata["volume"] = {"voxel_size": {"z": 1.0, "y": 0.65, "x": 0.65}, "unit": "micrometer"}
+    metadata["timeseries_with_channels"] = {"voxel_size": {"z": 1.0, "y": 0.65, "x": 0.65}, "unit": "micrometer"}
 
     with open("./example_data/voxel_sizes.json", "w") as f:
         json.dump(metadata, f)
