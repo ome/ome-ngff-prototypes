@@ -15,15 +15,13 @@ AXES_TYPE_DICT = {
 def create_ngff_metadata(g, name, axes_names, scale=None, units=None, type_=None, metadata=None):
 
     # axes metadata
-    # NOTE may change to list[dict], see comment by Stephan
-    # NOTE 'labels' may change to 'names', see comment by Andreas
-    axes = {
-        "labels": axes_names,
-        "types": [AXES_TYPE_DICT[ax] for ax in axes_names]
-    }
+    axes = [
+        {"name": name, "type": AXES_TYPE_DICT[name]} for name in axes_names
+    ]
     if units is not None:
         assert len(units) == len(axes_names)
-        axes["units"] = units
+        for ax, unit in zip(axes, units):
+            ax["unit"] = unit
 
     # dataset metadata including transformations
     spatial_dims = [i for i, ax in enumerate(axes_names) if ax in "xyz"]
