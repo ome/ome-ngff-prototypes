@@ -17,9 +17,9 @@ The examples in `single_image` contain data that is described with a single `mul
 - tczyx: timeseries of 3d volumes with channel, full data from [3]
 
 Publications:
-[1] https://onlinelibrary.wiley.com/doi/full/10.1002/bies.202000257
-[2] https://www.sciencedirect.com/science/article/pii/S193131282030620X
-[3] https://elifesciences.org/articles/57613
+- [1] https://onlinelibrary.wiley.com/doi/full/10.1002/bies.202000257
+- [2] https://www.sciencedirect.com/science/article/pii/S193131282030620X
+- [3] https://elifesciences.org/articles/57613
 
 The initial data in h5 format is available at https://oc.embl.de/index.php/s/4bDrWVnuDHIKmRF. 
 The data in ome.zarr format version 0.3 is available at TODO
