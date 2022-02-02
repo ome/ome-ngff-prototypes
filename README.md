@@ -15,6 +15,7 @@ The examples in `single_image` contain data that is described with a single `mul
 - tcyx.ome.zarr: timeseries of images with channel, timeseries of central slice of membrane + nucleus channel from [3]
 - czyx.ome.zarr: 3d volume with channel, single timepoint of membrane and nucleus channel from [3]
 - tczyx.ome.zarr: timeseries of 3d volumes with channel, full data from [3]
+- multi-image.ome.zarr: a simple example for multiple images in one ome.zarr, stores all four channels from `cyx.ome.zarr` as separate 2d images.
 
 Publications:
 - [1] https://onlinelibrary.wiley.com/doi/full/10.1002/bies.202000257
@@ -24,4 +25,6 @@ Publications:
 Data availability:
 - The initial data in h5 format is available at https://oc.embl.de/index.php/s/4bDrWVnuDHIKmRF.
 - The data in ome.zarr format version 0.3 is available at https://s3.embl.de/i2k-2020/ngff-example-data/v0.3. 
-- The data in ome.zarr format version 0.4 is available at https://s3.embl.de/i2k-2020/ngff-example-data/v0.4.
+- The data in ome.zarr format version 0.4 is available at:
+    - https://s3.embl.de/i2k-2020/ngff-example-data/v0.4 (via s3)
+    - https://oc.embl.de/index.php/s/tTcRt4TUF9oqZPe (as single zip with all the example data)
