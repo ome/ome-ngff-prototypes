@@ -61,7 +61,7 @@ def write_ome_zarr(data, path, axes_names, name, n_scales,
                    downscaler=skimage.transform.rescale,
                    kwargs={"scale": (0.5, 0.5, 0.5), "order": 0, "preserve_range": True},
                    scale=None, units=None,
-                   dimension_separator="/"):
+                   dimension_separator="/", **extra_kwargs):
     """Write numpy data to ome.zarr format.
     """
     assert dimension_separator in (".", "/")

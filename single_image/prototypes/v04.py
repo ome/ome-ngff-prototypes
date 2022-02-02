@@ -12,7 +12,7 @@ AXES_TYPE_DICT = {
 }
 
 
-def create_ngff_metadata(g, name, axes_names, scale=None, units=None, type_=None, metadata=None):
+def create_ngff_metadata(g, name, axes_names, scale=None, units=None, type_=None, metadata=None, time_scale=None):
 
     # axes metadata
     axes = [
@@ -21,7 +21,8 @@ def create_ngff_metadata(g, name, axes_names, scale=None, units=None, type_=None
     if units is not None:
         assert len(units) == len(axes_names)
         for ax, unit in zip(axes, units):
-            ax["unit"] = unit
+            if unit is not None:
+                ax["unit"] = unit
 
     # dataset metadata including transformations
     spatial_dims = [i for i, ax in enumerate(axes_names) if ax in "xyz"]
@@ -34,12 +35,13 @@ def create_ngff_metadata(g, name, axes_names, scale=None, units=None, type_=None
     scale_factor = 2
 
     # NOTE we might need a half pixel offset for proper scale alignment here (via a translation)
+    n_non_spatial = len(axes_names) - len(spatial_dims)
     transforms = [
-        [{"type": "scale", "scale": [sc * scale_factor**i for sc in scale], "axisIndices": spatial_dims}]
+        [{"type": "scale", "scale": [1] * n_non_spatial + [sc * scale_factor**i for sc in scale]}]
         for i in range(len(g))
     ]
     datasets = [
-        {"path": name, "transformations": trafo} for name, trafo in zip(g, transforms)
+        {"path": name, "coordinateTransformations": trafo} for name, trafo in zip(g, transforms)
     ]
 
     ms_entry = {
@@ -52,6 +54,14 @@ def create_ngff_metadata(g, name, axes_names, scale=None, units=None, type_=None
         ms_entry["type"] = type_
     if metadata is not None:
         ms_entry["metadata"] = metadata
+
+    if time_scale is None:
+        transforms = None
+    else:
+        scale = [time_scale if ax == "t" else 1 for ax in axes_names]
+        transforms = [{"type": "scale", "scale": scale}]
+    if transforms is not None:
+        ms_entry["coordinateTransformations"] = transforms
 
     metadata = g.attrs.get("multiscales", [])
     metadata.append(ms_entry)
@@ -67,7 +77,7 @@ def write_ome_zarr(data, path, axes_names, name, n_scales,
                    key=None, chunks=None,
                    downscaler=skimage.transform.rescale,
                    kwargs={"scale": (0.5, 0.5, 0.5), "order": 0, "preserve_range": True},
-                   scale=None, units=None,
+                   scale=None, units=None, time_scale=None,
                    dimension_separator="/"):
     """Write numpy data to ome.zarr format.
     """
@@ -90,4 +100,4 @@ def write_ome_zarr(data, path, axes_names, name, n_scales,
         function_name = f"{downscaler.__module__}.{downscaler.__name__}"
         create_ngff_metadata(g, name, axes_names,
                              type_=function_name, metadata=kwargs,
-                             scale=scale, units=units)
+                             scale=scale, units=units, time_scale=time_scale)

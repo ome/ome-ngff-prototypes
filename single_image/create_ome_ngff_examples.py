@@ -20,7 +20,7 @@ def _create_examples(writer, root):
     with open("./example_data/voxel_sizes.json") as f:
         voxel_sizes = json.load(f)
 
-    def create(path, axes, bb=np.s_[:], voxel_size=None, unit=None):
+    def create(path, axes, bb=np.s_[:], voxel_size=None, unit=None, time_scale=None, time_unit=None):
         ax_name = "".join(axes)
         out_path = os.path.join(root, f"{ax_name}.ome.zarr")
         if os.path.exists(out_path):
@@ -30,8 +30,21 @@ def _create_examples(writer, root):
             data = f["data"][bb]
         assert data.ndim == len(axes)
         kwargs = _kwargs_3d() if axes[-3:] == ("z", "y", "x") else _kwargs_2d()
-        units = None if unit is None else [unit if ax in ("z", "y", "x") else None for ax in axes]
-        writer(data, out_path, axes, ax_name, n_scales=3, kwargs=kwargs, scale=voxel_size, units=units)
+        if unit is None and time_unit is None:
+            units = None
+        else:
+            units = []
+            for ax in axes:
+                ax_unit = None
+                if ax in ("z", "y", "x"):
+                    ax_unit = unit
+                elif ax == "t":
+                    ax_unit = time_unit
+                units.append(ax_unit)
+        writer(
+            data, out_path, axes, ax_name,
+            n_scales=3, kwargs=kwargs, scale=voxel_size, units=units, time_scale=time_scale
+        )
 
     # yx example data
     create("./example_data/image_with_channels.h5", ("y", "x"), np.s_[0])
@@ -47,13 +60,13 @@ def _create_examples(writer, root):
     voxel_size = voxel_sizes["timeseries_with_channels"]["voxel_size"]
     unit = voxel_sizes["timeseries_with_channels"]["unit"]
     create("./example_data/timeseries_with_channels.h5", ("t", "y", "x"), np.s_[:, 0, 200],
-           unit=unit, voxel_size=voxel_size)
+           unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
     # tcyx example data
     create("./example_data/timeseries_with_channels.h5", ("t", "c", "y", "x"), np.s_[:, :, 200],
-           unit=unit, voxel_size=voxel_size)
+           unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
     # tczyx example data
     create("./example_data/timeseries_with_channels.h5", ("t", "c", "z", "y", "x"),
-           unit=unit, voxel_size=voxel_size)
+           unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
 
 
 def create_v03():
