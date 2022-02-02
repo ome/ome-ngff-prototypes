@@ -22,7 +22,7 @@ Publications:
 - [2] https://www.sciencedirect.com/science/article/pii/S193131282030620X
 - [3] https://elifesciences.org/articles/57613
 
-Data availability:
+#### Data availability
 - The initial data in h5 format is available at https://oc.embl.de/index.php/s/4bDrWVnuDHIKmRF.
 - The data in ome.zarr format version 0.3 is available at https://s3.embl.de/i2k-2020/ngff-example-data/v0.3. 
 - The data in ome.zarr format version 0.4 is available at:
