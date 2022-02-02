@@ -20,11 +20,14 @@ def _create_examples(writer, root):
     with open("./example_data/voxel_sizes.json") as f:
         voxel_sizes = json.load(f)
 
-    def create(path, axes, bb=np.s_[:], voxel_size=None, unit=None, time_scale=None, time_unit=None):
-        ax_name = "".join(axes)
-        out_path = os.path.join(root, f"{ax_name}.ome.zarr")
+    def create(path, axes, bb=np.s_[:],
+               voxel_size=None, unit=None,
+               time_scale=None, time_unit=None,
+               prefix=None, ax_name=None, out_path=None):
+        ax_name = "".join(axes) if ax_name is None else ax_name
+        out_path = os.path.join(root, f"{ax_name}.ome.zarr") if out_path is None else out_path
         print("Create", out_path)
-        if os.path.exists(out_path):
+        if os.path.exists(out_path) and prefix is None:
             print("Example data at", out_path, "is already present")
             return
         with h5py.File(path, "r") as f:
@@ -44,7 +47,8 @@ def _create_examples(writer, root):
                 units.append(ax_unit)
         writer(
             data, out_path, axes, ax_name,
-            n_scales=3, kwargs=kwargs, scale=voxel_size, units=units, time_scale=time_scale
+            n_scales=3, kwargs=kwargs, scale=voxel_size, units=units, time_scale=time_scale,
+            prefix=prefix
         )
 
     # yx example data
@@ -68,6 +72,15 @@ def _create_examples(writer, root):
     # tczyx example data
     create("./example_data/timeseries_with_channels.h5", ("t", "c", "z", "y", "x"),
            unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
+
+    # create example with multiple images
+    path = "./example_data/image_with_channels.h5"
+    with h5py.File(path, "r") as f:
+        n_channels = f["data"].shape[0]
+    out_path = os.path.join(root, "multi-image.ome.zarr")
+    for chan in range(n_channels):
+        name = f"image-{chan}"
+        create(path, ("y", "x"), np.s_[chan], ax_name=name, out_path=out_path, prefix=name)
 
 
 def create_v03():

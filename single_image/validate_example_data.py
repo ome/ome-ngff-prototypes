@@ -17,7 +17,6 @@ def validate_v04():
         schema = json.load(f)
 
     files = glob("./v0.4/*.ome.zarr")
-    print(files)
     for path in files:
         print("Validate", path)
         with open(os.path.join(path, ".zattrs"), "r") as f:
