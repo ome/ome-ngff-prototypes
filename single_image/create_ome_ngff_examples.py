@@ -23,6 +23,7 @@ def _create_examples(writer, root):
     def create(path, axes, bb=np.s_[:], voxel_size=None, unit=None, time_scale=None, time_unit=None):
         ax_name = "".join(axes)
         out_path = os.path.join(root, f"{ax_name}.ome.zarr")
+        print("Create", out_path)
         if os.path.exists(out_path):
             print("Example data at", out_path, "is already present")
             return
