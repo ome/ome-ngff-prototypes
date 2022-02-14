@@ -44,7 +44,7 @@ def create_ngff_metadata(g, name, axes_names, scale=None, units=None, type_=None
         for i in range(len(ds_root))
     ]
     datasets = [
-        {"path": name if prefix is None else f"{prefix}/name", "coordinateTransformations": trafo}
+        {"path": name if prefix is None else f"{prefix}/{name}", "coordinateTransformations": trafo}
         for name, trafo in zip(ds_root, transforms)
     ]
 
