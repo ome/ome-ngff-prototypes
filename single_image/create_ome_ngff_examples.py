@@ -73,6 +73,9 @@ def _create_examples(writer, root):
     create("./example_data/timeseries_with_channels.h5", ("t", "c", "z", "y", "x"),
            unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
 
+    # this is not supported in the 0.3 code yet
+    if "0.3" in root:
+        return
     # create example with multiple images
     path = "./example_data/image_with_channels.h5"
     with h5py.File(path, "r") as f:
