@@ -24,6 +24,8 @@ Publications:
 
 #### Data availability
 - The initial data in h5 format is available at https://oc.embl.de/index.php/s/4bDrWVnuDHIKmRF.
+- The data in ome.zarr format version 0.1 is available at
+    - https://s3.embl.de/i2k-2020/ngff-example-data/v0.1 (via s3)
 - The data in ome.zarr format version 0.2 is available at
     - https://s3.embl.de/i2k-2020/ngff-example-data/v0.2 (via s3)
 - The data in ome.zarr format version 0.3 is available at 

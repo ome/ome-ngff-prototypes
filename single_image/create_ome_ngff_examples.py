@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from functools import partial
 
 import h5py
 import numpy as np
@@ -85,6 +86,12 @@ def _create_examples(writer, root):
             create(path, ("y", "x"), np.s_[chan], ax_name=name, out_path=out_path, prefix=name)
 
 
+def create_v01():
+    from prototypes.v02 import write_ome_zarr
+    root = "v0.1"
+    _create_examples(partial(write_ome_zarr, dimension_separator="."), root)
+
+
 def create_v02():
     from prototypes.v02 import write_ome_zarr
     root = "v0.2"
@@ -108,7 +115,9 @@ def main():
     parser.add_argument("-v", "--version", type=str)
     args = parser.parse_args()
     version = args.version.lstrip("v")
-    if version == "0.2":
+    if version == "0.1":
+        create_v01()
+    elif version == "0.2":
         create_v02()
     elif version == "0.3":
         create_v03()
