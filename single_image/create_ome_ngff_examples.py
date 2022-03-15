@@ -73,17 +73,22 @@ def _create_examples(writer, root):
     create("./example_data/timeseries_with_channels.h5", ("t", "c", "z", "y", "x"),
            unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
 
-    # this is not supported in the 0.3 code yet
-    if "0.3" in root:
-        return
-    # create example with multiple images
-    path = "./example_data/image_with_channels.h5"
-    with h5py.File(path, "r") as f:
-        n_channels = f["data"].shape[0]
-    out_path = os.path.join(root, "multi-image.ome.zarr")
-    for chan in range(n_channels):
-        name = f"image-{chan}"
-        create(path, ("y", "x"), np.s_[chan], ax_name=name, out_path=out_path, prefix=name)
+    # multi image currently only implemented for 0.4
+    if "0.4" in root:
+        # create example with multiple images
+        path = "./example_data/image_with_channels.h5"
+        with h5py.File(path, "r") as f:
+            n_channels = f["data"].shape[0]
+        out_path = os.path.join(root, "multi-image.ome.zarr")
+        for chan in range(n_channels):
+            name = f"image-{chan}"
+            create(path, ("y", "x"), np.s_[chan], ax_name=name, out_path=out_path, prefix=name)
+
+
+def create_v02():
+    from prototypes.v02 import write_ome_zarr
+    root = "v0.2"
+    _create_examples(write_ome_zarr, root)
 
 
 def create_v03():
@@ -103,7 +108,9 @@ def main():
     parser.add_argument("-v", "--version", type=str)
     args = parser.parse_args()
     version = args.version.lstrip("v")
-    if version == "0.3":
+    if version == "0.2":
+        create_v02()
+    elif version == "0.3":
         create_v03()
     elif version == "0.4":
         create_v04()
