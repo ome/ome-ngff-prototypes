@@ -7,7 +7,7 @@ The resulting project is available both via EMBL-Heidelberg s3 and EMBL-EBI s3:
 
 It can be opened in [the MoBIE Fiji plugin](https://github.com/mobie/mobie-viewer-fiji#install) by selecting `Plugins->MoBIE->Open->Open MoBIE Project` and then entering one of the addresses.
 
-The data used for this example is part of [ntegrative imaging reveals SARS-CoV-2-induced reshaping of subcellular morphologies](https://www.sciencedirect.com/science/article/pii/S193131282030620X).
+The data used for this example is part of [Integrative imaging reveals SARS-CoV-2-induced reshaping of subcellular morphologies](https://www.sciencedirect.com/science/article/pii/S193131282030620X).
 The full MoBIE project for this publication is available at https://github.com/mobie/covid-em-project.
 
 ## Running the example
