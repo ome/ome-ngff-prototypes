@@ -36,4 +36,5 @@ Publications:
 
 ### Workflows
 
-TODO
+The `workflows` folder contains example workflows for creating and using more complex projects with ome.ngff data.
+Currently, it creates an example for creating an ngff data based MoBIE project and converting spatial transcriptomics data to ngff.
