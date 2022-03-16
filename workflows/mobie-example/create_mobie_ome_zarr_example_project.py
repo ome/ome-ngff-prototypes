@@ -1,25 +1,23 @@
 import mobie
 
 
-DS_NAME = "Covid19-S4-Area2"
-
-
 def create_ngff_example(file_format):
-    raw_path = "../data/Covid19-S4-Area2/images/local/sbem-6dpf-1-whole-raw.n5"
-    raw_key = "setup0/timepoint0/s3"
+    ds_name = "Covid19-S4-Area2"
+    raw_path = "./example_data/raw.n5"
+    raw_key = "data"
 
     resolution = (0.008, 0.008, 0.008)
     resolution = [res * 2 ** 3 for res in resolution]
     scale_factors = [[2, 2, 2]] * 3
     chunks = (64,) * 3
 
-    mobie.add_image(raw_path, raw_key, "./data", DS_NAME, image_name="raw",
+    mobie.add_image(raw_path, raw_key, "./data", ds_name, image_name="raw",
                     resolution=resolution, scale_factors=scale_factors, chunks=chunks,
                     file_format=file_format, menu_name="em", target="local", max_jobs=8)
 
-    seg_path = "../data/Covid19-S4-Area2/images/local/s4_area2_segmentation.n5"
-    seg_key = "setup0/timepoint0/s3"
-    mobie.add_segmentation(seg_path, seg_key, "./data", DS_NAME, segmentation_name="segmentation",
+    seg_path = "./example_data/segmentation.n5"
+    seg_key = "data"
+    mobie.add_segmentation(seg_path, seg_key, "./data", ds_name, segmentation_name="segmentation",
                            resolution=resolution, scale_factors=scale_factors, chunks=chunks, menu_name="em-seg",
                            file_format=file_format, max_jobs=8)
 
