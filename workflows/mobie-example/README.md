@@ -1,7 +1,7 @@
 # Create a MoBIE project with ome.zarr data
 
 Example script to create a MoBIE project with ome.zarr data using the [mobie-python library](https://github.com/mobie/mobie-utils-python).
-The resulting problem is available both via EMBL-Heidelberg s3 and EMBL-EBI s3:
+The resulting project is available both via EMBL-Heidelberg s3 and EMBL-EBI s3:
 - https://s3.embl.de/i2k-2020/project-ome-zarr
 - https://uk1s3.embassy.ebi.ac.uk/bia-mobie-test
 
