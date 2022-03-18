@@ -1,8 +1,9 @@
+import argparse
 import json
 import os
 
 import s3fs
-# import zarr
+from tqdm import tqdm
 
 
 def download_n5_volume(endpoint_url, bucket_name, container, dataset, output_file, output_key):
@@ -31,9 +32,8 @@ def download_n5_volume(endpoint_url, bucket_name, container, dataset, output_fil
     with open(attrs_file, "w") as f:
         json.dump(attrs, f)
 
-    # open the empty local dataset and iterate over the chunks to download them
-    # dataset = zarr.open(output_file)[output_key]
-    for name, obj in store.items():
+    # download all the chunks
+    for name, obj in tqdm(store.items(), desc=f"Download data from {endpoint_url}/{bucket_name}/{container}/{dataset}"):
         if name == "attributes.json":
             continue
         chunk_path = os.path.join(ds_file, name)
@@ -43,16 +43,20 @@ def download_n5_volume(endpoint_url, bucket_name, container, dataset, output_fil
 
 
 def download_example_data():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scale", "-s", default=3, type=int)
+    args = parser.parse_args()
+
     os.makedirs("./example_data", exist_ok=True)
     # download the raw data (we use "s3", which is downsampled 3 times by a factor of 2)
     download_n5_volume("https://s3.embl.de", "covid-fib-sem",
                        container="Covid19-S4-Area2/images/local/fibsem-raw.n5",
-                       dataset="setup0/timepoint0/s3",
+                       dataset=f"setup0/timepoint0/s{args.scale}",
                        output_file="./example_data/raw.n5", output_key="data")
     # download the segmentation data
     download_n5_volume("https://s3.embl.de", "covid-fib-sem",
                        container="Covid19-S4-Area2/images/local/s4_area2_segmentation.n5",
-                       dataset="setup0/timepoint0/s3",
+                       dataset=f"setup0/timepoint0/s{args.scale}",
                        output_file="./example_data/segmentation.n5", output_key="data")
 
 

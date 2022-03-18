@@ -12,5 +12,8 @@ The full MoBIE project for this publication is available at https://github.com/m
 
 ## Running the example
 
-First, run the `download_exmaple_data.py` script to download the example data from s3. Then run `create_mobie_ome_zarr_example.py` to create the example project.
+This example contains two scripts:
+- `download_example_data.py` to load the data for this example from s3. You can pass the argument `--scale` to this function to choose the scale level at which the data will be downloaded and control the size of the data. For example `python download_exampl_data.py --scale 0` will download it at the full resolution, corresponding to the maximal size. The default is scale 3.
+- `create_mobie_ome_zarr_example.py` to create the MoBIE project, using ome.zarr as data format.
+
 You will need to set up a python environment with the mobie python library to run these scripts, see https://github.com/mobie/mobie-utils-python#installation for details.
