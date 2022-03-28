@@ -83,7 +83,7 @@ def convert_label_data(in_path, group, resolution, units, label_name, colors=Non
     # provide additional storage options for zarr
     storage_opts = get_storage_opts(axis_names)
 
-    ome_zarr.writer.write_multiscale_image_labels(
+    ome_zarr.writer.write_multiscale_labels(
         mip, group, label_name,
         axes=axes, coordinate_transformations=trafos,
         storage_options=storage_opts, colors=colors
