@@ -10,9 +10,15 @@ import zarr
 from tqdm import tqdm
 
 
-def write_as_ome_zarr(mip, group, resolution, units, axis_names, name):
+def get_axes_and_trafos(mip, axis_names, units, resolution):
+    axes = []
+    for ax in axis_names:
+        axis = {"name": ax, "type": "channel" if ax == "c" else "space"}
+        unit = units.get(ax, None)
+        if unit is not None:
+            axis["unit"] = unit
+        axes.append(axis)
 
-    # specify the scale metadata (it would be nice to determine this dynamically, but for now we hard-code it
     is_scaled = {"c": False, "z": False, "y": True, "x": True}
     trafos = [
         [{
@@ -22,30 +28,12 @@ def write_as_ome_zarr(mip, group, resolution, units, axis_names, name):
         for scale_level in range(len(mip))
     ]
 
-    axes = []
-    for ax in axis_names:
-        axis = {"name": ax, "type": "channel" if ax == "c" else "space"}
-        unit = units.get(ax, None)
-        if unit is not None:
-            axis["unit"] = unit
-        axes.append(axis)
+    return axes, trafos
 
-    # provide additional storage options for zarr
-    chunks = (1, 1, 512, 512) if len(axes) == 4 else (1, 512, 512)
-    assert len(chunks) == len(axis_names)
-    storage_opts = {"chunks": chunks}
-    assert mip[0].ndim == len(axes), f"{mip[0].shape}, {len(axes)}"
 
-    # write the data to ome.zarr
-    ome_zarr.writer.write_multiscale(
-        mip, group, axes=axes,
-        coordinate_transformations=trafos, storage_options=storage_opts,
-    )
-    # this should be supported by wrte_multiscale, see
-    # https://github.com/ome/ome-zarr-py/issues/176
-    multiscales = group.attrs["multiscales"]
-    multiscales[0]["name"] = name
-    group.attrs["multiscales"] = multiscales
+def get_storage_opts(axis_names):
+    chunks = (1, 512, 512) if len(axis_names) == 3 else (1, 1, 512, 512)
+    return {"chunks": chunks}
 
 
 def convert_image_data(in_path, group, resolution, units, name):
@@ -61,9 +49,19 @@ def convert_image_data(in_path, group, resolution, units, name):
     scaler = ome_zarr.scale.Scaler()
     mip = scaler.local_mean(vol)
 
-    # specify the axis metadata
+    # specify the axis and transformation metadata
     axis_names = tuple("czyx")
-    write_as_ome_zarr(mip, group, resolution, units, axis_names, name)
+    axes, trafos = get_axes_and_trafos(mip, axis_names, units, resolution)
+
+    # provide additional storage options for zarr
+    storage_opts = get_storage_opts(axis_names)
+
+    # write the data to ome.zarr
+    ome_zarr.writer.write_multiscale(
+        mip, group,
+        axes=axes, coordinate_transformations=trafos,
+        storage_options=storage_opts, name=name
+    )
 
 
 def convert_label_data(in_path, group, resolution, units, label_name, colors=None):
@@ -78,17 +76,18 @@ def convert_label_data(in_path, group, resolution, units, label_name, colors=Non
     scaler = ome_zarr.scale.Scaler()
     mip = scaler.nearest(vol)
 
-    # specify the axis metadata
+    # specify the axis and transformation metadata
     axis_names = tuple("zyx")
-    write_as_ome_zarr(mip, group, resolution, units, axis_names, name=label_name)
+    axes, trafos = get_axes_and_trafos(mip, axis_names, units, resolution)
 
-    # there should be convenience functions for adding labels instead, that takes care of this, see
-    # https://github.com/ome/ome-zarr-py/issues/171
-    group.attrs["labels"] = label_name
-    label_metadata = {"source": {"image": "../.."}}
-    if colors is not None:
-        label_metadata["colors"] = colors
-    group.attrs["image_label"] = label_metadata
+    # provide additional storage options for zarr
+    storage_opts = get_storage_opts(axis_names)
+
+    ome_zarr.writer.write_multiscale_labels(
+        mip, group, label_name,
+        axes=axes, coordinate_transformations=trafos,
+        storage_options=storage_opts, colors=colors
+    )
 
 
 def main():
@@ -128,22 +127,14 @@ def main():
         group = zarr.group(loc.store)
         convert_image_data(image, group, resolution, units, name="image")
 
-        label_root = group.create_group("labels")
         cell_segmentation = os.path.join(cell_folder, name)
-        label_group = label_root.create_group("cells")
         assert os.path.exists(cell_segmentation)
-        convert_label_data(cell_segmentation, label_group, label_resolution, units, label_name="cells")
+        convert_label_data(cell_segmentation, group, label_resolution, units, label_name="cells")
 
         nucleus_segmentation = os.path.join(nucleus_folder, name)
         assert os.path.exists(nucleus_segmentation)
-        label_group = label_group.create_group("labels")
         colors = [{"label-value": 1, "rgba": [0, 0, 255, 255]}]
-        convert_label_data(nucleus_segmentation, label_group, label_resolution, units,
-                           label_name="nuclei", colors=colors)
-
-        # there should be convenience functions for adding labels instead, that takes care of this, see
-        # https://github.com/ome/ome-zarr-py/issues/171
-        label_root.attrs["labels"] = ["cells", "nuclei"]
+        convert_label_data(nucleus_segmentation, group, label_resolution, units, label_name="nuclei", colors=colors)
 
 
 if __name__ == "__main__":
