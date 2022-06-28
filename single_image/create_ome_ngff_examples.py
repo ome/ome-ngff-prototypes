@@ -70,6 +70,9 @@ def _create_examples(writer, root):
     # tcyx example data
     create("./example_data/timeseries_with_channels.h5", ("t", "c", "y", "x"), np.s_[:, :, 200],
            unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
+    # czyx example data
+    create("./example_data/timeseries_with_channels.h5", ("c", "z", "y", "x"), np.s_[0, :, :],
+           unit=unit, voxel_size=voxel_size)
     # tczyx example data
     create("./example_data/timeseries_with_channels.h5", ("t", "c", "z", "y", "x"),
            unit=unit, voxel_size=voxel_size, time_unit="second", time_scale=10)
